@@ -1,0 +1,103 @@
+#define x A1
+#define y A2
+#define z A3
+#include<LiquidCrystal.h>
+LiquidCrystal lcd(4,5,6,7,8,9);
+int xsample=0;
+int ysample=0;
+int zsample=0;
+
+#define samples 10
+
+#define minVal -70
+#define MaxVal 70
+
+void setup() {
+  // declare the ledPin as an OUTPUT:
+  Serial.begin(9600);
+ 
+  lcd.begin(16,2);  
+  lcd.print("   FITs  ALERT  ");
+  lcd.setCursor(0,1);
+  lcd.print("SYSTEM USING IOT    ");
+  delay(2000);
+  lcd.clear();
+  lcd.print("Initializing");
+  lcd.setCursor(0,1);
+  lcd.print("Please Wait...");
+  delay(1000);
+  pinMode(12, OUTPUT);
+  lcd.clear();
+  lcd.print("Initialized");
+  lcd.setCursor(0,1);
+  lcd.print("Successfully");
+  delay(2000);
+  lcd.clear();
+  lcd.print("Callibrating ");
+  lcd.setCursor(0,1);
+  lcd.print("Acceleromiter");
+   for(int i=0;i<samples;i++)
+  {
+    xsample+=analogRead(x);
+    ysample+=analogRead(y);
+    zsample+=analogRead(z);
+  }
+
+  xsample/=samples;
+  ysample/=samples;
+  zsample/=samples;
+  delay(1000);
+  lcd.clear();
+  lcd.print("System Ready");
+ 
+  delay(2000);
+
+}
+
+void loop() {
+digitalWrite(12,HIGH);
+  for(int i=0;i<samples;i++)
+  {
+    xsample+=analogRead(x);
+    ysample+=analogRead(y);
+    zsample+=analogRead(z);
+  }
+
+  xsample/=samples;
+  ysample/=samples;
+  zsample/=samples;
+  int value1=analogRead(x);
+    int value2=analogRead(y);
+    int value3=analogRead(z);
+
+    int xValue=xsample-value1;
+    int yValue=ysample-value2;
+    int zValue=zsample-value3;
+    
+   // Serial.print("x=");
+   // Serial.println(xValue);
+   // Serial.print("y=");
+   // Serial.println(yValue);
+   // Serial.print("z=");
+   // Serial.println(zValue);
+
+   lcd.clear();
+  lcd.print("DETECTING FITs......");
+
+    if(xValue < minVal || xValue > MaxVal  || yValue < minVal || yValue > MaxVal  || zValue < minVal || zValue > MaxVal)
+    {
+      Serial.println("fits");
+        lcd.clear();
+       lcd.print("FITs... DETECTED");
+       digitalWrite(12, LOW);
+       delay(3000);
+       lcd.clear();
+       lcd.print("SENDING INFO TO ");
+         lcd.setCursor(0,1);
+       lcd.print("   SERVER   ");
+       delay(2000);
+       
+    }       
+  delay(100);
+
+}
